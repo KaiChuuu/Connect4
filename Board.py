@@ -10,10 +10,9 @@ class Board:
         self.ROWS = rows
         self.COLUMNS = columns
         self.WINNING_CHAIN = winning_chain
-        self.board = [[0] * self.COLUMNS] * self.ROWS
+        self.board = [[0 for _ in range(self.COLUMNS)] for _ in range(self.ROWS)]
 
     def update_board(self, row, col, value):
-        # just pass in col, and find row thats empty (if possible)
         if (self.board[row][col] == 0 and
                 (row + 1 == self.ROWS or self.board[row + 1][col] != 0)):
             self.board[row][col] = value
@@ -25,19 +24,32 @@ class Board:
 
     def is_winning_move(self, row, col, value):
         for direction in self.DIRECTIONS:
-            curr_row = row
-            curr_col = col
+            fwd_row = row
+            fwd_col = col
 
             chain = 0
-            while (0 < curr_row < self.ROWS and
-                   0 < curr_col < self.COLUMNS and
-                   self.board[curr_row][curr_col] == value):
-                curr_row += direction[0]
-                curr_col += direction[1]
+            while (0 <= fwd_row < self.ROWS and
+                   0 <= fwd_col < self.COLUMNS and
+                   self.board[fwd_row][fwd_col] == value):
+                fwd_row += direction[0]
+                fwd_col += direction[1]
                 chain += 1
 
-            if chain > self.WINNING_CHAIN:
+            bwd_row = row
+            bwd_col = col
+            while (0 <= bwd_row < self.ROWS and
+                   0 <= bwd_col < self.COLUMNS and
+                   self.board[bwd_row][bwd_col] == value):
+                bwd_row -= direction[0]
+                bwd_col -= direction[1]
+                chain += 1
+
+            if chain - 1 >= self.WINNING_CHAIN:
                 return True
 
         return False
 
+    def print_board(self):
+        for row in self.board:
+            print(' '.join(str(slot) for slot in row))
+        print()
